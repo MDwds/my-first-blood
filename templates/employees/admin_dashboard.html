@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+{% block title %}员工管理 · 员工信息管理门户{% endblock %}
+{% block content %}
+<section class="page-heading page-heading-admin">
+    <div>
+        <span class="eyebrow">ADMIN CONSOLE</span>
+        <h1>员工管理</h1>
+        <p>集中查看员工档案、账号状态与组织信息，并对员工账号进行受控维护。</p>
+    </div>
+    <a class="button button-dark" href="{% url 'employees:employee_create' %}">＋ 录入新员工</a>
+</section>
+
+<section class="stat-grid">
+    <article class="stat-card stat-card-main">
+        <span class="stat-label">员工总数</span>
+        <strong>{{ total_employees }}</strong>
+        <small>当前纳入管理的员工账号</small>
+    </article>
+    <article class="stat-card">
+        <span class="stat-label">正常账号</span>
+        <strong>{{ active_employees }}</strong>
+        <small>可正常登录的员工</small>
+    </article>
+    <article class="stat-card">
+        <span class="stat-label">部门数量</span>
+        <strong>{{ department_count }}</strong>
+        <small>已分配的所属部门</small>
+    </article>
+    <article class="stat-card">
+        <span class="stat-label">近 30 天新增</span>
+        <strong>{{ new_employees }}</strong>
+        <small>新录入的员工档案</small>
+    </article>
+</section>
+
+<section class="content-card table-card">
+    <div class="table-toolbar">
+        <div>
+            <span class="eyebrow">EMPLOYEE DIRECTORY</span>
+            <h2>员工目录</h2>
+        </div>
+        <form method="get" class="filter-form">
+            <div class="filter-search">
+                <label class="sr-only" for="q">搜索员工</label>
+                <input id="q" name="q" value="{{ query }}" placeholder="搜索姓名、账号、电话、职位">
+            </div>
+            <label class="sr-only" for="department">部门筛选</label>
+            <select id="department" name="department">
+                <option value="">全部部门</option>
+                {% for value, label in departments %}
+                    <option value="{{ value }}" {% if selected_department == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+            <label class="sr-only" for="status">状态筛选</label>
+            <select id="status" name="status">
+                <option value="">全部状态</option>
+                <option value="active" {% if selected_status == 'active' %}selected{% endif %}>正常</option>
+                <option value="inactive" {% if selected_status == 'inactive' %}selected{% endif %}>停用</option>
+            </select>
+            <button type="submit" class="button button-primary">筛选</button>
+            {% if query or selected_department or selected_status %}
+                <a class="button button-ghost" href="{% url 'employees:admin_dashboard' %}">清除</a>
+            {% endif %}
+        </form>
+    </div>
+
+    {% if page_obj.object_list %}
+        <div class="table-scroll">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>员工</th>
+                        <th>部门 / 职位</th>
+                        <th>联系方式</th>
+                        <th>状态</th>
+                        <th>入职日期</th>
+                        <th class="table-actions-heading">操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for employee in page_obj %}
+                        <tr>
+                            <td>
+                                <div class="table-person">
+                                    <span class="mini-avatar">{{ employee.display_name|slice:":1" }}</span>
+                                    <span>
+                                        <strong>{{ employee.full_name }}</strong>
+                                        <small>{{ employee.username }}</small>
+                                    </span>
+                                </div>
+                            </td>
+                            <td>
+                                <strong class="cell-primary">{{ employee.get_department_display|default:"未分配" }}</strong>
+                                <small class="cell-secondary">{{ employee.position|default:"职位待完善" }}</small>
+                            </td>
+                            <td>
+                                <span class="cell-primary">{{ employee.phone|default:"未填写电话" }}</span>
+                                <small class="cell-secondary">{{ employee.email|default:"未填写邮箱" }}</small>
+                            </td>
+                            <td>
+                                {% if employee.is_active %}
+                                    <span class="status status-active">正常</span>
+                                {% else %}
+                                    <span class="status status-inactive">停用</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ employee.hire_date|date:"Y-m-d"|default:"未填写" }}</td>
+                            <td>
+                                <div class="row-actions">
+                                    <a href="{% url 'employees:employee_detail' employee.pk %}">查看</a>
+                                    <a href="{% url 'employees:employee_update' employee.pk %}">修改</a>
+                                    <a class="danger-link" href="{% url 'employees:employee_delete' employee.pk %}">删除</a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if page_obj.paginator.num_pages > 1 %}
+            <nav class="pagination" aria-label="员工列表分页">
+                {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}&q={{ query|urlencode }}&department={{ selected_department|urlencode }}&status={{ selected_status|urlencode }}">上一页</a>
+                {% endif %}
+                <span>第 {{ page_obj.number }} / {{ page_obj.paginator.num_pages }} 页</span>
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}&q={{ query|urlencode }}&department={{ selected_department|urlencode }}&status={{ selected_status|urlencode }}">下一页</a>
+                {% endif %}
+            </nav>
+        {% endif %}
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">∅</div>
+            <h3>没有找到符合条件的员工</h3>
+            <p>尝试清除筛选条件，或直接录入一位新员工。</p>
+            <a class="button button-primary" href="{% url 'employees:employee_create' %}">录入新员工</a>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

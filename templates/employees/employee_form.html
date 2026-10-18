@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}{{ page_title }} · 员工信息管理门户{% endblock %}
+{% block content %}
+<section class="page-heading page-heading-compact">
+    <div>
+        <span class="eyebrow">EMPLOYEE RECORD</span>
+        <h1>{{ page_title }}</h1>
+        <p>{% if employee %}更新员工档案与账号设置，密码留空则保持不变。{% else %}创建员工登录账号并录入基础档案信息。{% endif %}</p>
+    </div>
+    <a class="button button-secondary" href="{% if employee %}{% url 'employees:employee_detail' employee.pk %}{% else %}{% url 'employees:admin_dashboard' %}{% endif %}">取消并返回</a>
+</section>
+
+<form method="post" class="content-card form-card" novalidate>
+    {% csrf_token %}
+    {% if form.non_field_errors %}<div class="form-alert">{{ form.non_field_errors }}</div>{% endif %}
+
+    <section class="form-section">
+        <div class="form-section-heading">
+            <span>01</span>
+            <div><h2>账号信息</h2><p>员工使用此账号登录员工门户。</p></div>
+        </div>
+        <div class="form-grid">
+            {% include "employees/_field.html" with field=form.username %}
+            {% if form.password1 %}{% include "employees/_field.html" with field=form.password1 %}{% endif %}
+            {% if form.password2 %}{% include "employees/_field.html" with field=form.password2 %}{% endif %}
+            {% include "employees/_field.html" with field=form.is_active %}
+        </div>
+    </section>
+
+    <section class="form-section">
+        <div class="form-section-heading">
+            <span>02</span>
+            <div><h2>基础资料</h2><p>用于识别员工及其组织归属。</p></div>
+        </div>
+        <div class="form-grid">
+            {% include "employees/_field.html" with field=form.full_name %}
+            {% include "employees/_field.html" with field=form.phone %}
+            {% include "employees/_field.html" with field=form.department %}
+            {% include "employees/_field.html" with field=form.position %}
+            {% include "employees/_field.html" with field=form.email %}
+            {% include "employees/_field.html" with field=form.hire_date %}
+        </div>
+    </section>
+
+    <section class="form-section">
+        <div class="form-section-heading">
+            <span>03</span>
+            <div><h2>联系与紧急信息</h2><p>补充联系地址、紧急联系人和个人简介。</p></div>
+        </div>
+        <div class="form-grid">
+            <div class="span-two">{% include "employees/_field.html" with field=form.address %}</div>
+            {% include "employees/_field.html" with field=form.emergency_contact %}
+            {% include "employees/_field.html" with field=form.emergency_phone %}
+            <div class="span-two">{% include "employees/_field.html" with field=form.bio %}</div>
+        </div>
+    </section>
+
+    <div class="form-actions form-actions-sticky">
+        <a class="button button-secondary" href="{% if employee %}{% url 'employees:employee_detail' employee.pk %}{% else %}{% url 'employees:admin_dashboard' %}{% endif %}">取消</a>
+        <button class="button button-dark" type="submit">{{ submit_label }}</button>
+    </div>
+</form>
+{% endblock %}

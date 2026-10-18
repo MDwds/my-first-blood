@@ -1,0 +1,70 @@
+{% load static %}
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="员工信息管理门户">
+    <title>{% block title %}员工信息管理门户{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <div class="ambient ambient-one"></div>
+    <div class="ambient ambient-two"></div>
+
+    <header class="site-header">
+        <div class="header-inner">
+            <a class="brand" href="{% url 'employees:home' %}">
+                <span class="brand-mark">EP</span>
+                <span>
+                    <strong>员工门户</strong>
+                    <small>Employee Portal</small>
+                </span>
+            </a>
+
+            <nav class="main-nav" aria-label="主导航">
+                {% if user.is_authenticated %}
+                    {% if user.role == 'admin' %}
+                        <a href="{% url 'employees:admin_dashboard' %}">员工管理</a>
+                        <a href="{% url 'employees:employee_create' %}">录入员工</a>
+                        <a href="/admin/">Django 后台</a>
+                    {% else %}
+                        <a href="{% url 'employees:employee_dashboard' %}">我的资料</a>
+                        <a href="{% url 'employees:profile_edit' %}">更新资料</a>
+                    {% endif %}
+                    <span class="user-chip">
+                        <span class="user-avatar">{{ user.display_name|slice:":1" }}</span>
+                        <span class="user-chip-copy">
+                            <strong>{{ user.display_name }}</strong>
+                            <small>{{ user.get_role_display }}</small>
+                        </span>
+                    </span>
+                    <form action="{% url 'employees:logout' %}" method="post" class="logout-form">
+                        {% csrf_token %}
+                        <button type="submit" class="text-button">退出登录</button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'employees:employee_login' %}">员工登录</a>
+                    <a class="nav-emphasis" href="{% url 'employees:admin_login' %}">管理员登录</a>
+                {% endif %}
+            </nav>
+        </div>
+    </header>
+
+    <main class="page-main">
+        {% if messages %}
+            <div class="message-stack" aria-live="polite">
+                {% for message in messages %}
+                    <div class="message message-{{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer">
+        <span>员工信息管理门户</span>
+        <span>安全 · 清晰 · 高效</span>
+    </footer>
+</body>
+</html>

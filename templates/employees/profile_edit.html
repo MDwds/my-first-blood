@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}更新个人资料 · 员工信息管理门户{% endblock %}
+{% block content %}
+<section class="page-heading page-heading-compact">
+    <div>
+        <span class="eyebrow">UPDATE PROFILE</span>
+        <h1>更新个人资料</h1>
+        <p>你可以维护联系方式和紧急联系人，其他工作信息请联系管理员修改。</p>
+    </div>
+    <a class="button button-secondary" href="{% url 'employees:employee_dashboard' %}">返回我的资料</a>
+</section>
+
+<section class="form-layout">
+    <div class="content-card form-card">
+        <div class="readonly-banner">
+            <span>当前账号</span>
+            <strong>{{ user.full_name }} · {{ user.username }}</strong>
+        </div>
+        <form method="post" novalidate>
+            {% csrf_token %}
+            {% if form.non_field_errors %}<div class="form-alert">{{ form.non_field_errors }}</div>{% endif %}
+            <div class="form-grid">
+                {% include "employees/_field.html" with field=form.phone %}
+                {% include "employees/_field.html" with field=form.email %}
+                {% include "employees/_field.html" with field=form.address %}
+                {% include "employees/_field.html" with field=form.emergency_contact %}
+                {% include "employees/_field.html" with field=form.emergency_phone %}
+                <div class="span-two">{% include "employees/_field.html" with field=form.bio %}</div>
+            </div>
+            <div class="form-actions">
+                <a class="button button-secondary" href="{% url 'employees:employee_dashboard' %}">取消</a>
+                <button class="button button-primary" type="submit">保存个人资料</button>
+            </div>
+        </form>
+    </div>
+    <aside class="content-card tip-card">
+        <span class="tip-number">01</span>
+        <h2>隐私提醒</h2>
+        <p>请勿在个人简介中填写身份证号、银行卡号或其他敏感信息。</p>
+        <span class="tip-number">02</span>
+        <h2>信息准确性</h2>
+        <p>手机号与紧急联系人应保持有效，以便在紧急情况下及时联络。</p>
+    </aside>
+</section>
+{% endblock %}

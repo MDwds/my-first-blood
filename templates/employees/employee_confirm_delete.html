@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}删除员工 · 员工信息管理门户{% endblock %}
+{% block content %}
+<section class="delete-layout">
+    <div class="content-card delete-card">
+        <span class="danger-symbol">!</span>
+        <span class="eyebrow">DESTRUCTIVE ACTION</span>
+        <h1>确认删除这位员工？</h1>
+        <p>删除后，员工账号和档案将从系统中移除，此操作无法撤销。</p>
+        <div class="delete-person">
+            <span class="mini-avatar">{{ employee.display_name|slice:":1" }}</span>
+            <span><strong>{{ employee.display_name }}</strong><small>{{ employee.username }} · {{ employee.get_department_display|default:"未分配部门" }}</small></span>
+        </div>
+        <form method="post" class="delete-actions">
+            {% csrf_token %}
+            <a class="button button-secondary" href="{% url 'employees:employee_detail' employee.pk %}">取消</a>
+            <button class="button button-danger" type="submit">确认永久删除</button>
+        </form>
+    </div>
+</section>
+{% endblock %}

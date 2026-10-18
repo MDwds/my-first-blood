@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}{{ employee.display_name }} · 员工详情{% endblock %}
+{% block content %}
+<section class="page-heading page-heading-compact">
+    <div>
+        <span class="eyebrow">EMPLOYEE DETAIL</span>
+        <h1>员工详情</h1>
+        <p>查看员工档案、账号状态和联系信息。</p>
+    </div>
+    <div class="heading-actions">
+        <a class="button button-secondary" href="{% url 'employees:admin_dashboard' %}">返回列表</a>
+        <a class="button button-primary" href="{% url 'employees:employee_update' employee.pk %}">修改信息</a>
+        <a class="button button-danger" href="{% url 'employees:employee_delete' employee.pk %}">删除员工</a>
+    </div>
+</section>
+
+<section class="profile-hero detail-hero">
+    <div class="profile-identity">
+        <div class="profile-avatar profile-avatar-admin">{{ employee.display_name|slice:":1" }}</div>
+        <div>
+            <div class="identity-line">
+                <h2>{{ employee.full_name }}</h2>
+                {% if employee.is_active %}
+                    <span class="status status-active">账号正常</span>
+                {% else %}
+                    <span class="status status-inactive">账号停用</span>
+                {% endif %}
+            </div>
+            <p>{{ employee.position|default:"职位待完善" }} · {{ employee.get_department_display|default:"部门待分配" }}</p>
+            <span class="account-label">员工账号：{{ employee.username }}</span>
+        </div>
+    </div>
+    <div class="detail-meta">
+        <span>创建于 {{ employee.created_at|date:"Y-m-d H:i" }}</span>
+        <span>最后更新 {{ employee.updated_at|date:"Y-m-d H:i" }}</span>
+    </div>
+</section>
+
+<div class="dashboard-grid">
+    <section class="content-card">
+        <div class="card-heading"><div><span class="eyebrow">WORK INFO</span><h2>工作信息</h2></div></div>
+        <dl class="info-grid">
+            <div><dt>员工账号</dt><dd>{{ employee.username }}</dd></div>
+            <div><dt>所属部门</dt><dd>{{ employee.get_department_display|default:"未填写" }}</dd></div>
+            <div><dt>当前职位</dt><dd>{{ employee.position|default:"未填写" }}</dd></div>
+            <div><dt>入职日期</dt><dd>{{ employee.hire_date|date:"Y年m月d日"|default:"未填写" }}</dd></div>
+        </dl>
+    </section>
+    <section class="content-card">
+        <div class="card-heading"><div><span class="eyebrow">CONTACT</span><h2>联系信息</h2></div></div>
+        <dl class="info-grid">
+            <div><dt>手机号码</dt><dd>{{ employee.phone|default:"未填写" }}</dd></div>
+            <div><dt>电子邮箱</dt><dd>{{ employee.email|default:"未填写" }}</dd></div>
+            <div class="span-two"><dt>联系地址</dt><dd>{{ employee.address|default:"未填写" }}</dd></div>
+        </dl>
+    </section>
+    <section class="content-card">
+        <div class="card-heading"><div><span class="eyebrow">EMERGENCY</span><h2>紧急联系人</h2></div></div>
+        <dl class="info-grid">
+            <div><dt>联系人</dt><dd>{{ employee.emergency_contact|default:"未填写" }}</dd></div>
+            <div><dt>联系电话</dt><dd>{{ employee.emergency_phone|default:"未填写" }}</dd></div>
+            <div class="span-two"><dt>个人简介</dt><dd>{{ employee.bio|default:"尚未填写个人简介。"|linebreaksbr }}</dd></div>
+        </dl>
+    </section>
+    <aside class="content-card permission-card">
+        <span class="permission-icon">⌁</span>
+        <h2>资料完整度</h2>
+        <div class="detail-completion">{{ employee.profile_completion }}%</div>
+        <div class="progress-track"><span style="width: {{ employee.profile_completion }}%"></span></div>
+        <p>完整度根据基础资料、联系方式和紧急联系人自动计算。</p>
+    </aside>
+</div>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}员工登录 · 员工信息管理门户{% endblock %}
+{% block content %}
+<section class="login-layout">
+    <div class="login-story login-story-employee">
+        <span class="eyebrow">EMPLOYEE ACCESS</span>
+        <h1>欢迎回到<br>你的工作空间</h1>
+        <p>在这里查看和更新自己的联系信息，所有内容仅对你本人及授权管理员可见。</p>
+        <div class="story-points">
+            <span>个人资料专属可见</span>
+            <span>联系方式随时更新</span>
+            <span>账号状态一目了然</span>
+        </div>
+        <div class="story-orbit" aria-hidden="true">
+            <span></span><span></span><span></span>
+        </div>
+    </div>
+
+    <div class="login-panel">
+        <div class="login-panel-heading">
+            <span class="eyebrow">员工入口</span>
+            <h2>登录员工账号</h2>
+            <p>使用管理员为你创建的员工账号和密码登录。</p>
+        </div>
+
+        <form method="post" class="auth-form" novalidate>
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+                <div class="form-alert">{{ form.non_field_errors }}</div>
+            {% endif %}
+            <div class="form-field">
+                <label for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
+                {{ form.username }}
+                {% if form.username.errors %}<div class="field-error">{{ form.username.errors }}</div>{% endif %}
+            </div>
+            <div class="form-field">
+                <label for="{{ form.password.id_for_label }}">{{ form.password.label }}</label>
+                {{ form.password }}
+                {% if form.password.errors %}<div class="field-error">{{ form.password.errors }}</div>{% endif %}
+            </div>
+            <button type="submit" class="button button-primary button-block">进入员工空间</button>
+        </form>
+
+        <div class="login-switch">
+            <span>管理员请使用专用入口</span>
+            <a href="{% url 'employees:admin_login' %}">管理员登录 →</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

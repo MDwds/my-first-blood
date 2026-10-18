@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}我的资料 · 员工信息管理门户{% endblock %}
+{% block content %}
+<section class="page-heading">
+    <div>
+        <span class="eyebrow">MY PROFILE</span>
+        <h1>你好，{{ employee.display_name }}</h1>
+        <p>这里展示你的个人档案。敏感管理字段由管理员维护，你可以更新自己的联系方式。</p>
+    </div>
+    <a class="button button-primary" href="{% url 'employees:profile_edit' %}">更新个人资料</a>
+</section>
+
+<section class="profile-hero">
+    <div class="profile-identity">
+        <div class="profile-avatar">{{ employee.display_name|slice:":1" }}</div>
+        <div>
+            <div class="identity-line">
+                <h2>{{ employee.full_name }}</h2>
+                {% if employee.is_active %}
+                    <span class="status status-active">账号正常</span>
+                {% else %}
+                    <span class="status status-inactive">账号停用</span>
+                {% endif %}
+            </div>
+            <p>{{ employee.position|default:"职位待完善" }} · {{ employee.get_department_display|default:"部门待分配" }}</p>
+            <span class="account-label">员工账号：{{ employee.username }}</span>
+        </div>
+    </div>
+    <div class="profile-progress">
+        <div class="progress-heading">
+            <span>资料完整度</span>
+            <strong>{{ employee.profile_completion }}%</strong>
+        </div>
+        <div class="progress-track"><span style="width: {{ employee.profile_completion }}%"></span></div>
+        <small>完善联系方式与紧急联系人，有助于团队在需要时联系你。</small>
+    </div>
+</section>
+
+<div class="dashboard-grid">
+    <section class="content-card">
+        <div class="card-heading">
+            <div>
+                <span class="eyebrow">WORK INFO</span>
+                <h2>工作信息</h2>
+            </div>
+        </div>
+        <dl class="info-grid">
+            <div><dt>员工账号</dt><dd>{{ employee.username }}</dd></div>
+            <div><dt>所属部门</dt><dd>{{ employee.get_department_display|default:"未填写" }}</dd></div>
+            <div><dt>当前职位</dt><dd>{{ employee.position|default:"未填写" }}</dd></div>
+            <div><dt>入职日期</dt><dd>{{ employee.hire_date|date:"Y年m月d日"|default:"未填写" }}</dd></div>
+        </dl>
+    </section>
+
+    <section class="content-card">
+        <div class="card-heading">
+            <div>
+                <span class="eyebrow">CONTACT</span>
+                <h2>联系信息</h2>
+            </div>
+        </div>
+        <dl class="info-grid">
+            <div><dt>手机号码</dt><dd>{{ employee.phone|default:"未填写" }}</dd></div>
+            <div><dt>电子邮箱</dt><dd>{{ employee.email|default:"未填写" }}</dd></div>
+            <div class="span-two"><dt>联系地址</dt><dd>{{ employee.address|default:"未填写" }}</dd></div>
+        </dl>
+    </section>
+
+    <section class="content-card">
+        <div class="card-heading">
+            <div>
+                <span class="eyebrow">EMERGENCY</span>
+                <h2>紧急联系人</h2>
+            </div>
+        </div>
+        <dl class="info-grid">
+            <div><dt>联系人</dt><dd>{{ employee.emergency_contact|default:"未填写" }}</dd></div>
+            <div><dt>联系电话</dt><dd>{{ employee.emergency_phone|default:"未填写" }}</dd></div>
+            <div class="span-two"><dt>个人简介</dt><dd>{{ employee.bio|default:"尚未填写个人简介。"|linebreaksbr }}</dd></div>
+        </dl>
+    </section>
+
+    <aside class="content-card permission-card">
+        <span class="permission-icon">✓</span>
+        <h2>你的访问权限</h2>
+        <p>你只能查看和编辑自己的资料，无法访问其他员工信息或管理员页面。</p>
+        <ul class="clean-list">
+            <li>查看自己的完整档案</li>
+            <li>更新联系方式与紧急联系人</li>
+            <li>不可修改部门、职位和账号状态</li>
+        </ul>
+    </aside>
+</div>
+{% endblock %}
