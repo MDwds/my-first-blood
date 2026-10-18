@@ -30,6 +30,11 @@ python manage.py runserver
 - 员工管理：<http://127.0.0.1:8000/portal/manage/>
 - Django 后台：<http://127.0.0.1:8000/admin/>
 
+
+![alt text](image-1.png)
+![alt text](image.png)
+
+
 ## 演示账号
 
 | 角色 | 账号 | 密码 |
